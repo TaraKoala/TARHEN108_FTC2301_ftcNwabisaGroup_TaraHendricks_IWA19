@@ -1,34 +1,65 @@
-matches = books
-page = 1;
+//import data from the data.js file, be sure to have the variables declared and exported
+import { BOOKS_PER_PAGE, authors, genres, books } from "./data.js";
+
+
+const matches = books
+let page = 1;
 
 if (!books && !Array.isArray(books)) throw new Error('Source required') 
 if (!range && range.length < 2) throw new Error('Range must be an array with two numbers')
 
-day = {
+const day = {
     dark: '10, 10, 20',
     light: '255, 255, 255',
 }
 
-night = {
+const night = {
     dark: '255, 255, 255',
     light: '10, 10, 20',
 }
 
-fragment = document.createDocumentFragment()
+//fragment created to hold books
+let fragment = document.createDocumentFragment()
 const extracted = books.slice(0, 36)
 
-for ({ author, image, title, id }; extracted; i++) {
-    const preview = createPreview({
-        author,
-        id,
-        image,
-        title
-    })
 
-    fragment.appendChild(preview)
-}
 
-data-list-items.appendChild(fragment)
+// for (let i = 0; i < BOOKS_PER_PAGE; i++) {
+//     const book = books[index];
+    
+// }
+
+for (const book of extracted) {
+    const { author: authorId, id, image, title } = book;
+  
+    let preview = document.createElement("button");
+          preview.classList = 'preview'
+          preview.setAttribute('data-preview', id)
+          preview.innerHTML = `
+              <img
+                  class="preview__image"
+                  src="${image}"
+              />
+              
+              <div class="preview__info">
+                  <h3 class="preview__title">${title}</h3>
+                  <div class="preview__author">${authors[authorId]}</div>
+              </div>
+          `;
+  
+    fragment.appendChild(preview);
+  }
+
+dataListItems.appendChild(fragment)
+
+
+settingsButton.addEventListener('click', (event) => {
+    document.querySelector("[data-settings-overlay]").showModal();
+})
+
+settingsCancel.addEventListener('click', () => {
+    document.querySelector("[data-settings-overlay]").close();
+})
 
 genres = document.createDocumentFragment()
 element = document.createElement('option')
@@ -63,6 +94,9 @@ data-search-authors.appendChild(authors)
 data-settings-theme.value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
 v = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches? 'night' | 'day'
 
+
+
+
 documentElement.style.setProperty('--color-dark', css[v].dark);
 documentElement.style.setProperty('--color-light', css[v].light);
 data-list-button = "Show more (books.length - BOOKS_PER_PAGE)"
@@ -73,6 +107,9 @@ data-list-button.innerHTML = /* html */ [
     '<span>Show more</span>',
     '<span class="list__remaining"> (${matches.length - [page * BOOKS_PER_PAGE] > 0 ? matches.length - [page * BOOKS_PER_PAGE] : 0})</span>',
 ]
+
+
+
 
 data-search-cancel.click() { data-search-overlay.open === false }
 data-settings-cancel.click() { querySelect(data-settings-overlay).open === false }
@@ -183,3 +220,20 @@ data-list-items.click() {
     data-list-subtitle === '${authors[active.author]} (${Date(active.published).year})'
     data-list-description === active.description
 }
+
+const searchButton = document.querySelector("[data-header-search]");
+const cancelSearch = document.querySelector("[data-search-cancel]");
+const settingsButton = document.querySelector("[data-header-settings]");
+const settingsCancel = document.querySelector("[data-settings-cancel]");
+const dataListItems = document.querySelector("[data-list-items]");
+const moreButton = document.querySelector("[data-list-button]");
+const themeSettings = document.querySelector('[data-settings-theme]')
+const saveSettings = document.querySelector("[data-settings-form]");
+const themeChoice = document.querySelector("[data-settings-theme]");
+const searchForm = document.querySelector('[data-search-form]')
+const searchGenres = document.querySelector("[data-search-genres]");
+const authorsOptions = document.querySelector("[data-search-authors]");
+console.log(saveSettings);
+console.log(settingsCancel)
+
+

@@ -9,6 +9,7 @@ const range = [0, BOOKS_PER_PAGE];
 if (!books && !Array.isArray(books)) throw new Error('Source required') 
 if (!range && range.length < 2) throw new Error('Range must be an array with two numbers')
 
+//themes for the app
 const day = {
     dark: '10, 10, 20',
     light: '255, 255, 255',
@@ -23,6 +24,8 @@ const night = {
 let fragment = document.createDocumentFragment()
 const extracted = books.slice(0, 36)
 
+//create query selectors to select HTML elements to be used in the file
+
 const searchButton = document.querySelector("[data-header-search]");
 const cancelSearch = document.querySelector("[data-search-cancel]");
 const settingsButton = document.querySelector("[data-header-settings]");
@@ -32,7 +35,6 @@ const moreButton = document.querySelector("[data-list-button]");
 const themeSettings = document.querySelector('[data-settings-theme]')
 const saveSettings = document.querySelector("[data-settings-form]");
 const themeChoice = document.querySelector("[data-settings-theme]");
-const searchForm = document.querySelector('[data-search-form]')
 const searchGenres = document.querySelector("[data-search-genres]");
 const authorsOptions = document.querySelector("[data-search-authors]");
 
@@ -116,7 +118,6 @@ const createPreviewsFragment = (matches, start = (page * BOOKS_PER_PAGE), end = 
     return fragment
 };
 
-console.log(createPreviewsFragment(matches))
 
 moreButton.addEventListener('click', () => {
     dataListItems.appendChild(createPreviewsFragment(matches))

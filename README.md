@@ -1,6 +1,6 @@
 # TARHEN108_FTC2301_ftcNwabisaGroup_TaraHendricks_IWA19
 
-##Interactive Web Apps - JavasScript Fundamentals - Capstone
+## Interactive Web Apps - JavasScript Fundamentals - Capstone
 
 ## Creator
 Tara Hendricks </br>

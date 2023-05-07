@@ -2,14 +2,14 @@
 
 ##Interactive Web Apps - JavasScript Fundamentals - Capstone
 
-##Creator
+## Creator
 Tara Hendricks
 email: taradecodehendricks@gmail.com
 github: https://github.com/TaraKoala
 
-##Description
+## Description
 Capstone project for the IWA Javascript fundamentals course. 
 
-##Link to Google slides
+## Link to Google slides
 
-##Resources 
+## Resources 

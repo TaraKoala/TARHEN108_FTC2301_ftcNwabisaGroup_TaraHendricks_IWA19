@@ -165,8 +165,8 @@ const saveTheme = (event) => {
     const formData = new FormData(settingsData)
     const result = Object.fromEntries(formData)
 
-    document.documentElement.style.setProperty('--color-dark', cs[result.theme].dark);
-    document.documentElement.style.setProperty('--color-light', css[result.theme].light);
+    document.documentElement.style.setProperty('--color-dark', themeColors[result.theme].dark);
+    document.documentElement.style.setProperty('--color-light', themeColors[result.theme].light);
     
     settings.close()
 }

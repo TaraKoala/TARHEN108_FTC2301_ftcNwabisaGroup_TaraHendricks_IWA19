@@ -1,16 +1,16 @@
 //import data from the data.js file, be sure to have the variables declared and exported
 import { BOOKS_PER_PAGE, authors, genres, books } from "./data.js";
 
-
-const matches = books
+//Global variables which would be used throughout the script
+let matches = books;
 let page = 1;
 const range = [0, BOOKS_PER_PAGE];
 
 if (!books && !Array.isArray(books)) throw new Error('Source required') 
 if (!range && range.length < 2) throw new Error('Range must be an array with two numbers')
 
-//themes for the app
-const themeColors = {
+//themes for the app to toggle between light and dark
+const themeColor = {
     night : {
         dark: '255, 255, 255',
         light: '10, 10, 20'
@@ -23,9 +23,9 @@ const themeColors = {
 
 //fragment created to hold books
 const fragment = document.createDocumentFragment()
-const extracted = books.slice(0, BOOKS_PER_PAGE)
+let extracted = books.slice(0, BOOKS_PER_PAGE)
 
-// shows books on the page
+// shows the first 36 books on the page
 const createPreview = (props) => {
     const {author, id, image, title} = props
 
@@ -37,144 +37,66 @@ const createPreview = (props) => {
         class="preview__image" 
         src="${image}" 
     />
-    
     <div class="preview__info">
         <h3 class="preview__title">${title}</h3>
         <div class="preview__author">${authors[author]}</div>
     </div>
     `;
-
     return element
 };
 
-for (const booksIndex of extracted) {
-    const preview = createPreview(booksIndex)
+//loop for the preview of books
+for (const books of extracted) {
+    const preview = createPreview(books)
     fragment.appendChild(preview)
 }
 
 document.querySelector("[data-list-items]").appendChild(fragment);
 
-//show more button 
-const moreButton = document.querySelector("[data-list-button]");
+//show more button that loads more books onto the app/web browser
+const showmoreButton = document.querySelector('[data-list-button]')
 
-moreButton.innerHTML = /* html */
-    `<span>Show more</span>
-    <span class="list__remaining">${
-      matches.length - [page * BOOKS_PER_PAGE] > 0
-        ? matches.length - [page * BOOKS_PER_PAGE]
-        : 0
-}</span>`;
+const updateRemaining = () => {
+    const remaining = books.length - (BOOKS_PER_PAGE * page)
+    return remaining;
+}
 
-const showMoreFragment = (matches, start = (page * BOOKS_PER_PAGE), end = (page + 1) * BOOKS_PER_PAGE) => {
-    let extracted = matches.slice(start, end);
+const showMore = (event) => {
+    event.preventDefault()
     page += 1
-    for (const book of extracted) {
-      const { author: authorId, id, image, title } = book;
+    const remaining = updateRemaining()
+    const hasRemaining = remaining > 0 ? remaining : 0
 
-      let preview = document.createElement("button");
-      preview.classList = "preview";
-      preview.setAttribute("data-preview", id);
-      preview.innerHTML = `
-            <img
-                class="preview__image"
-                src="${image}"
-            />
-            
-            <div class="preview__info">
-                <h3 class="preview__title">${title}</h3>
-                <div class="preview__author">${authors[authorId]}</div>
-            </div>
-        `;
+    const rangeStart = (page - 1) * BOOKS_PER_PAGE
+    const rangeEnd = books.length - remaining
+    extracted = books.slice(rangeStart, rangeEnd)
 
-      fragment.appendChild(preview);
+    if (hasRemaining > 0) {
+        for (const books of extracted) {
+            const preview = createPreview(books)
+            fragment.appendChild(preview)
+        }
+        
+        document.querySelector("[data-list-items]").appendChild(fragment);
+
+        const previewList = document.querySelectorAll('.preview')
+        const previewArray = Array.from(previewList)
+        for (const preview of previewArray) {
+            preview.addEventListener('click', activePreview)
+        }
     }
-    return fragment
 };
 
+showmoreButton.addEventListener("click", showMore) 
 
-moreButton.addEventListener('click', () => {
-    dataListItems.appendChild(showMoreFragment(matches))
-    moreButton.textContent = `Show more (${books.length - (BOOKS_PER_PAGE * page)})`;
-    if (matches.length - page * BOOKS_PER_PAGE <= 0) {
-        moreButton.disabled = true;
-        moreButton.textContent = `Show more (0)`;
-    } else {moreButton.disabled = false;}
-}) 
+showmoreButton.innerHTML = /* html */ `
+    <span>Show more</span>
+    <span class="list__remaining">
+        (${updateRemaining()})
+    </span>
+`;
 
-//edit from around here
-
-
-//search button
-const searchButton = document.querySelector('[data-search-overlay] [type="submit"]')
-const searchData = document.querySelector('[data-search-form]')
-
-const filter = (event) => { 
-    event.preventDefault()
-    const formData = new FormData(searchData)
-    const filters = Object.fromEntries(formData)
-    console.log(filters);
-    const result = []
-
-    for (const book of books) {
-        const titleMatch = filters.title.trim() && book.title.toLowerCase().includes(filters.title.toLowerCase())
-        let authorMatch = true
-        let genreMatch = true
-
-        if (filters.author !== 'any') {
-            authorMatch = books.author === filters.author
-        }
-
-        if (filters.genre !== 'any') {
-            for (const singleGenre of book.genres) {
-                genreMatch = singleGenre === filters.genre
-            }
-        }
-
-        console.log(`
-        titleMatch ${titleMatch}
-        authorMatch ${authorMatch}
-        genreMatch ${genreMatch}
-        `);
-    }
-
-    optionsMenu.close()
-}
-
-searchButton.addEventListener('click', filter)
-
-//options button
-const optionsButton = document.querySelector('[data-header-search]')
-const optionsMenu = document.querySelector('[data-search-overlay]')
-const optionsCancel = document.querySelector('[data-search-cancel]')
-
-const showOptionsMenu = (event) => {
-    event.preventDefault()
-    optionsMenu.showModal()
-
-    optionsCancel.addEventListener('click', () => {
-        optionsMenu.close()
-    })
-}
-
-optionsButton.addEventListener('click', showOptionsMenu)
-const settingsSave = document.querySelector('[data-settings-overlay] [type="submit"]')
-const settingsData = document.querySelector('[data-settings-form]')
-
-const saveTheme = (event) => { 
-    event.preventDefault()
-    const formData = new FormData(settingsData)
-    const result = Object.fromEntries(formData)
-
-    document.documentElement.style.setProperty('--color-dark', themeColors[result.theme].dark);
-    document.documentElement.style.setProperty('--color-light', themeColors[result.theme].light);
-    
-    settings.close()
-}
-
-settingsSave.addEventListener('click', saveTheme)
-
-
-//view summary of books
+//summary of books on page
 const summary = document.querySelector('[data-list-active]')
 const summaryClose = document.querySelector('[data-list-close]')
 const summaryBackground = document.querySelector('[data-list-blur]')
@@ -212,10 +134,94 @@ const activePreview = (event) => {
         summary.close()
     })
 }
-2
 
 const previewList = document.querySelectorAll('.preview')
 const previewArray = Array.from(previewList)
 for (const preview of previewArray) {
     preview.addEventListener('click', activePreview)
 }
+
+//elements in the overlay that displays genre and author in the search button
+const genresFragment = document.createDocumentFragment()
+const genresOption = document.createElement('option')
+genresOption.value = 'any'
+genresOption.innerText = 'All Genres'
+genresFragment.appendChild(genresOption)
+
+for (const genre in genres) {
+    const genresOption = document.createElement('option')
+    genresOption.value = genres[genre]
+    genresOption.innerText = genres[genre]
+    genresFragment.appendChild(genresOption)
+}
+
+document.querySelector('[data-search-genres]').appendChild(genresFragment)
+
+const authorsFragment = document.createDocumentFragment()
+const authorsOption = document.createElement('option')
+authorsOption.value = 'any'
+authorsOption.innerText = 'All Authors'
+authorsFragment.appendChild(authorsOption)
+
+for (const author in authors) {
+    const authorsOption = document.createElement('option')
+    authorsOption.value = authors[author]
+    authorsOption.innerText = authors[author]
+    authorsFragment.appendChild(authorsOption)
+}
+
+document.querySelector('[data-search-authors]').appendChild(authorsFragment)
+
+//search toggle opens the search options
+const optionsButton = document.querySelector('[data-header-search]')
+const optionsMenu = document.querySelector('[data-search-overlay]')
+const optionsCancel = document.querySelector('[data-search-cancel]')
+
+const showOptionsMenu = (event) => {
+    event.preventDefault()
+    optionsMenu.showModal()
+
+    optionsCancel.addEventListener('click', () => {
+        optionsMenu.close()
+    })
+}
+
+optionsButton.addEventListener('click', showOptionsMenu)
+
+//theme toggle button
+document.querySelector('[data-settings-theme]').value = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'day' : 'night'
+let v = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'day' : 'night'
+
+document.documentElement.style.setProperty('--color-dark', themeColor[v].dark);
+document.documentElement.style.setProperty('--color-light', themeColor[v].light);
+
+const showSettings = (event) => {
+    event.preventDefault()
+    settings.showModal()
+
+    settingsCancel.addEventListener('click', () => {
+        settings.close()
+    })
+}
+const settingsButton = document.querySelector('[data-header-settings]')
+const settingsCancel = document.querySelector('[data-settings-cancel]')
+const settings = document.querySelector('[data-settings-overlay]')
+
+settingsButton.addEventListener('click', showSettings)
+
+
+const settingsSave = document.querySelector('[data-settings-overlay] [type="submit"]')
+const settingsData = document.querySelector('[data-settings-form]')
+
+const saveTheme = (event) => { 
+    event.preventDefault()
+    const formData = new FormData(settingsData)
+    const result = Object.fromEntries(formData)
+
+    document.documentElement.style.setProperty('--color-dark', themeColor[result.theme].dark);
+    document.documentElement.style.setProperty('--color-light', themeColor[result.theme].light);
+    
+    settings.close()
+}
+
+settingsSave.addEventListener('click', saveTheme)

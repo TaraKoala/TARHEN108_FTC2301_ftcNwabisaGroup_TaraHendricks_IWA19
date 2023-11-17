@@ -26,7 +26,6 @@ const fragment = document.createDocumentFragment()
 let extracted = books.slice(0, BOOKS_PER_PAGE)
 
 // shows the first 36 books on the page
-//I made use of the function and DOM to pull elements from the HTML doc, this enables the user to preview the list of books.
 const createPreview = (props) => {
     const {author, id, image, title} = props
 
@@ -55,7 +54,6 @@ for (const books of extracted) {
 document.querySelector("[data-list-items]").appendChild(fragment);
 
 //show more button that loads more books onto the app/web browser
-//to use the show more button, I used a query selector with a function, as well as ternary statements, as not to make the code too loaded. I added the event listener function, on a show more button, so that when the user clicks it, it loads another 36 books. 
 const showmoreButton = document.querySelector('[data-list-button]')
 
 const updateRemaining = () => {
@@ -99,7 +97,6 @@ showmoreButton.innerHTML = /* html */ `
 `;
 
 //summary of books on page
-//to make the summary of each book appear when clicked on, I used query selectors for each relevant html element, then used a function for an event, targeting the closest element, so that when it is clicked, the overlay shows up. The showModal function is used to make the overlay visible and I included a for loop to check through the array of books for id's that matches and if so, displays that book preview. I made use of interpilation on line 133, with a built-in object to get the year in which the book was published.
 const summary = document.querySelector('[data-list-active]')
 const summaryClose = document.querySelector('[data-list-close]')
 const summaryBackground = document.querySelector('[data-list-blur]')
@@ -145,7 +142,6 @@ for (const preview of previewArray) {
 }
 
 //elements in the overlay that displays genre and author in the search button
-//For the search button, the overlay needed to display genre and author options, to achieve this, multiple elements needed to be appended to the DOM, the for loop is used to generate a drop down menu of options.
 const genresFragment = document.createDocumentFragment()
 const genresOption = document.createElement('option')
 genresOption.value = 'any'
@@ -177,7 +173,6 @@ for (const author in authors) {
 document.querySelector('[data-search-authors]').appendChild(authorsFragment)
 
 //search toggle opens the search options
-//to make the search options overlay appear when clicked on, I used query selectors for each relevant html element. I then used a function with an event and used prevent default to ensure that the page doesn't change back when clicked. I then used the showModal function to display the overlay and an eventlistener to show the overlay when the search button is clicked.
 const searchButton = document.querySelector('[data-header-search]')
 const searchMenu = document.querySelector('[data-search-overlay]')
 const searchCancel = document.querySelector('[data-search-cancel]')
@@ -194,7 +189,6 @@ const showSearchMenu = (event) => {
 searchButton.addEventListener('click', showSearchMenu)
 
 //settings for theme toggle button
-//to create the setting for the theme preference of the user, a query selector is used with a MediaQueryList object, containing information on whether the user wants the them set to light or dark. I then added the event function with the showModal function and an eventListener, that when clicked, displays the overlay of the settings.
 document.querySelector('[data-settings-theme]').value = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'day' : 'night'
 let v = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'day' : 'night'
 
@@ -216,12 +210,9 @@ const settings = document.querySelector('[data-settings-overlay]')
 
 settingsButton.addEventListener('click', showSettings)
 
-
 const settingsSave = document.querySelector('[data-settings-overlay] [type="submit"]')
 const settingsData = document.querySelector('[data-settings-form]')
 
-
-//to ensure the theme is saved, an event fucntion is used along with an object set to formData.
 const saveTheme = (event) => { 
     event.preventDefault()
     const formData = new FormData(settingsData)
